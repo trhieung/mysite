@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "make build",
+        "type": "shell",
+        "command": "make",
+        "args": ["build"],
+        "options": {
+          "cwd": "${workspaceFolder}/build"
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "make debug",
+        "type": "shell",
+        "command": "make",
+        "args": ["debug"],
+        "options": {
+          "cwd": "${workspaceFolder}/build"
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+  

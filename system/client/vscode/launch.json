@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "C++ Launch (Linux)",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/src/execute/Debug/example_main",  // Adjust path to your executable
+        // "args": ["-h", "huhu", "--help", "./asdf", "huhu", "-a", "address", "-p", "asdf"],
+        "args": ["-h"],  // Add any arguments you want to pass to the executable here
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,  // Set to true if you want an external console
+        "MIMode": "gdb",  // Use GDB for Linux debugging
+        "miDebuggerPath": "/usr/bin/gdb",  // Adjust path if necessary
+        "logging": {
+          "moduleLoad": false,
+          "trace": true
+        },
+        "visualizerFile": "${workspaceFolder}/my.natvis",  // Optional, if you have a custom visualizer file
+        "showDisplayString": true,
+        // "preLaunchTask": "make debug",
+        "preLaunchTask": "make build"
+      }
+    ]
+  }
+  

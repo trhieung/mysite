@@ -1,0 +1,7 @@
+echo -n "test-data-" | curl -X POST \
+  -H "Content-Type: application/octet-stream" \
+  -H "Filename: your_file_name" \
+  -H "Range: bytes=0-10" \
+  --data-binary @- \
+  "http://0.0.0.0:8080/api/user-node/1-1/upload"
+  
