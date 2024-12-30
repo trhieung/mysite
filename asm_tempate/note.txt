@@ -1,0 +1,221 @@
+----get bin text
+xxd main.o > hex_main.txt
+or for 5 lines
+hd main.o | head -5 
+
+----checking command
+readelf -h main.o # elf headers        ? Ehdr
+readelf -l main.o # program headers    ? Phdr
+readelf -n main.o # section tables     ?
+readelf -S main.o # section headers    ? Shdr
+
+------------------------size define
+/* Type for a 16-bit quantity.  */
+typedef uint16_t Elf32_Half;
+typedef uint16_t Elf64_Half;
+
+/* Types for signed and unsigned 32-bit quantities.  */
+typedef uint32_t Elf32_Word;
+typedef	int32_t  Elf32_Sword;
+typedef uint32_t Elf64_Word;
+typedef	int32_t  Elf64_Sword;
+
+/* Types for signed and unsigned 64-bit quantities.  */
+typedef uint64_t Elf32_Xword;
+typedef	int64_t  Elf32_Sxword;
+typedef uint64_t Elf64_Xword;
+typedef	int64_t  Elf64_Sxword;
+
+/* Type of addresses.  */
+typedef uint32_t Elf32_Addr;
+typedef uint64_t Elf64_Addr;
+
+/* Type of file offsets.  */
+typedef uint32_t Elf32_Off;
+typedef uint64_t Elf64_Off;
+
+/* Type for section indices, which are 16-bit quantities.  */
+typedef uint16_t Elf32_Section;
+typedef uint16_t Elf64_Section;
+
+/* Type for version symbol information.  */
+typedef Elf32_Half Elf32_Versym;
+typedef Elf64_Half Elf64_Versym;
+
+------------------------elf64 header
+16	e_ident[EI_NIDENT];	/* Magic number and other info */
+2	e_type;			/* Object file type */
+2	e_machine;		/* Architecture */
+4	e_version;		/* Object file version */
+8	e_entry;		/* Entry point virtual address */
+8	e_phoff;		/* Program header table file offset */
+8	e_shoff;		/* Section header table file offset */
+4	e_flags;		/* Processor-specific flags */
+2	e_ehsize;		/* ELF header size in bytes */
+2	e_phentsize;		/* Program header table entry size */
+2	e_phnum;		/* Program header table entry count */
+2	e_shentsize;		/* Section header table entry size */
+2	e_shnum;		/* Section header table entry count */
+2	e_shstrndx;		/* Section header string table index */
+
+-> sum = 16 + 4*2 + 8*3 + 8*2 = 64 D = 40 H
+
+---------------------program64 header
+4	p_type;			/* Segment type */
+4	p_flags;		/* Segment flags */
+8	p_offset;		/* Segment file offset */
+8	p_vaddr;		/* Segment virtual address */
+8	p_paddr;		/* Segment physical address */
+8	p_filesz;		/* Segment size in file */
+8	p_memsz;		/* Segment size in memory */
+8	p_align;		/* Segment alignment */
+
+---------------------section64
+
+4	sh_name;		/* Section name (string tbl index) */
+4	sh_type;		/* Section type */
+8	sh_flags;		/* Section flags */
+8	sh_addr;		/* Section virtual addr at execution */
+8	sh_offset;		/* Section file offset */
+
+8	sh_size;		/* Section size in bytes */
+
+4	sh_link;		/* Link to another section */
+4	sh_info;		/* Additional section information */
+8	sh_addralign;		/* Section alignment */
+8	sh_entsize;		/* Entry size if section holds table */
+-> sum = 4*4 + 8*6 = 64
+
+---------------------elf64
+
+7f45 4c46 0201 0100 0000 0000 0000 0000     // e_ident[16]
+0100    // e_type
+3e00    // e_machine
+0100 0000   // e_version
+0000 0000 0000 0000 // e_entry  -   where execute starts
+0000 0000 0000 0000 // e_phoff  -   program header offset
+5003 0000 0000 0000 // e_shoff  -   section header offset
+0000 0000   // e_flags
+4000    // e_ehsize
+0000    // e_phentsize
+0000    // e_phnum
+4000    // e_shentsize
+0e00    // e_shnum
+0d00    // e_shstrndx
+
+---- sections
+// [0] null
+00000350: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00000360: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00000370: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00000380: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+// text
+00000390: 2000 0000 0100 0000 0600 0000 0000 0000   ...............
+000003a0: 0000 0000 0000 0000 4000 0000 0000 0000  ........@.......
+000003b0: 4d00 0000 0000 0000 0000 0000 0000 0000  M...............
+000003c0: 0100 0000 0000 0000 0000 0000 0000 0000  ................
+// rela.text
+000003d0: 1b00 0000 0400 0000 4000 0000 0000 0000  ........@.......
+000003e0: 0000 0000 0000 0000 7802 0000 0000 0000  ........x.......
+000003f0: 3000 0000 0000 0000 0b00 0000 0100 0000  0...............
+00000400: 0800 0000 0000 0000 1800 0000 0000 0000  ................
+//
+00000410: 2600 0000 0100 0000 0300 0000 0000 0000  &...............
+00000420: 0000 0000 0000 0000 8d00 0000 0000 0000  ................
+00000430: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00000440: 0100 0000 0000 0000 0000 0000 0000 0000  ................
+//
+00000450: 2c00 0000 0800 0000 0300 0000 0000 0000  ,...............
+00000460: 0000 0000 0000 0000 8d00 0000 0000 0000  ................
+00000470: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00000480: 0100 0000 0000 0000 0000 0000 0000 0000  ................
+//
+00000490: 3100 0000 0100 0000 0200 0000 0000 0000  1...............
+000004a0: 0000 0000 0000 0000 8d00 0000 0000 0000  ................
+000004b0: 0f00 0000 0000 0000 0000 0000 0000 0000  ................
+000004c0: 0100 0000 0000 0000 0000 0000 0000 0000  ................
+//
+000004d0: 3900 0000 0100 0000 3000 0000 0000 0000  9.......0.......
+000004e0: 0000 0000 0000 0000 9c00 0000 0000 0000  ................
+000004f0: 2c00 0000 0000 0000 0000 0000 0000 0000  ,...............
+00000500: 0100 0000 0000 0000 0100 0000 0000 0000  ................
+//
+00000510: 4200 0000 0100 0000 0000 0000 0000 0000  B...............
+00000520: 0000 0000 0000 0000 c800 0000 0000 0000  ................
+00000530: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00000540: 0100 0000 0000 0000 0000 0000 0000 0000  ................
+//
+00000550: 5200 0000 0700 0000 0200 0000 0000 0000  R...............
+00000560: 0000 0000 0000 0000 c800 0000 0000 0000  ................
+00000570: 2000 0000 0000 0000 0000 0000 0000 0000   ...............
+00000580: 0800 0000 0000 0000 0000 0000 0000 0000  ................
+//
+00000590: 6a00 0000 0100 0000 0200 0000 0000 0000  j...............
+000005a0: 0000 0000 0000 0000 e800 0000 0000 0000  ................
+000005b0: 5800 0000 0000 0000 0000 0000 0000 0000  X...............
+000005c0: 0800 0000 0000 0000 0000 0000 0000 0000  ................
+//
+000005d0: 6500 0000 0400 0000 4000 0000 0000 0000  e.......@.......
+000005e0: 0000 0000 0000 0000 a802 0000 0000 0000  ................
+000005f0: 3000 0000 0000 0000 0b00 0000 0900 0000  0...............
+00000600: 0800 0000 0000 0000 1800 0000 0000 0000  ................
+//
+00000610: 0100 0000 0200 0000 0000 0000 0000 0000  ................
+00000620: 0000 0000 0000 0000 4001 0000 0000 0000  ........@.......
+00000630: 2001 0000 0000 0000 0c00 0000 0a00 0000   ...............
+00000640: 0800 0000 0000 0000 1800 0000 0000 0000  ................
+// [12]
+00000650: 0900 0000 0300 0000 0000 0000 0000 0000  ................
+00000660: 0000 0000 0000 0000 6002 0000 0000 0000  ........`.......
+00000670: 1800 0000 0000 0000 0000 0000 0000 0000  ................
+00000680: 0100 0000 0000 0000 0000 0000 0000 0000  ................
+// [13]
+00000690: 1100 0000 0300 0000 0000 0000 0000 0000  ................
+000006a0: 0000 0000 0000 0000 d802 0000 0000 0000  ................
+000006b0: 7400 0000 0000 0000 0000 0000 0000 0000  t...............
+000006c0: 0100 0000 0000 0000 0000 0000 0000 0000  ................
+
+
+
+// ----- shell code
+
+0000000000001129 <_asm_print>:
+    1129:       f3 0f 1e fa             endbr64 
+    112d:       55                      push   %rbp
+    112e:       48 89 e5                mov    %rsp,%rbp
+    1131:       48 8d 05 cc 0e 00 00    lea    0xecc(%rip),%rax        # 2004 <_IO_stdin_used+0x4>
+    1138:       48 89 45 f8             mov    %rax,-0x8(%rbp)
+    113c:       48 8b 4d f8             mov    -0x8(%rbp),%rcx
+    1140:       48 c7 c0 01 00 00 00    mov    $0x1,%rax
+    1147:       48 c7 c7 01 00 00 00    mov    $0x1,%rdi
+    114e:       48 89 ce                mov    %rcx,%rsi
+    1151:       48 c7 c2 0e 00 00 00    mov    $0xe,%rdx
+    1158:       0f 05                   syscall 
+    115a:       90                      nop
+    115b:       5d                      pop    %rbp
+    115c:       c3                      retq   
+
+ 
+char buf[] = 
+    "f30f 1efa 5548 89e5 488d 0500 0000 0048"
+    "8945 f848 8b4d f848 c7c0 0100 0000 48c7"
+    "c701 0000 0048 89ce 48c7 c20e 0000 000f"
+    "0590 5dc3"
+
+0000000000000029 <__asm_print_arg>:
+  29:   f3 0f 1e fa             endbr64 
+  2d:   55                      push   %rbp
+  2e:   48 89 e5                mov    %rsp,%rbp
+  31:   48 89 7d f8             mov    %rdi,-0x8(%rbp)
+  35:   48 8b 55 f8             mov    -0x8(%rbp),%rdx
+  39:   48 89 d7                mov    %rdx,%rdi
+  3c:   48 c7 c0 00 00 00 00    mov    $0x0,%rax
+  43:   e8 00 00 00 00          callq  48 <__asm_print_arg+0x1f>
+  48:   90                      nop
+  49:   5d                      pop    %rbp
+  4a:   c3                      retq
+
+char buff[] = 
+"f30f 1efa 5548 89e5 4889 7df8 488b 55f8"
+"4889 d748 c7c0 0000 0000 e8bf feff ff90"
+"5dc3"
